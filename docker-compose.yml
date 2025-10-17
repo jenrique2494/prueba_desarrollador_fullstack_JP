@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: app_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  # Backend API DB (Acceso directo a base de datos)
+  backend_api_db:
+    build:
+      context: ./backend_api_db
+      dockerfile: Dockerfile
+    container_name: backend_api_db
+    restart: always
+    working_dir: /app
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: app_db
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_password
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend_api_db:/app
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+    command: php artisan serve --host=0.0.0.0
+
+  # Backend API Cliente (Consumidor de API y puente con cliente)
+  backend_api_cliente:
+    build:
+      context: ./backend_api_cliente
+      dockerfile: Dockerfile
+    container_name: backend_api_cliente
+    restart: always
+    working_dir: /app
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: app_db
+      DB_USERNAME: app_user
+      DB_PASSWORD: app_password
+      API_DB_URL: http://backend_api_db:8000
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend_api_cliente:/app
+    depends_on:
+      - mysql
+      - backend_api_db
+    networks:
+      - app_network
+    command: php artisan serve --host=0.0.0.0
+
+  # Frontend React (opcional para desarrollo)
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: app_react
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+
+networks:
+  app_network:
+    driver: bridge
