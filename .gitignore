@@ -1,0 +1,20 @@
+
+# Ignorar archivos específicos de backend
+backend_api_db/vendor/
+backend_api_db/node_modules/
+backend_api_db/.vscode/
+backend_api_db/.idea/
+backend_api_db/*.log
+
+# Ignorar archivos específicos de backend
+backend_api_cliente/vendor/
+backend_api_cliente/node_modules/
+backend_api_cliente/.vscode/
+backend_api_cliente/.idea/
+backend_api_cliente/*.log
+
+# Ignorar archivos específicos de frontend
+frontend/node_modules/
+frontend/build/
+frontend/.vscode/
+frontend/.idea/
