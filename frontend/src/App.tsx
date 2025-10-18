@@ -121,8 +121,18 @@ function App() {
               </Alert>
             )}
 
-            {/* Navigation Tabs */}
-            <Paper sx={{ mb: 3, width: '100%', mx: 'auto', px: 1, py: 0.5, borderRadius: 2 }}>
+            {/* Navigation Tabs + Content Card (unified) */}
+            <Paper
+              elevation={2}
+              sx={{
+                mb: 3,
+                width: '100%',
+                mx: 'auto',
+                borderRadius: 2,
+                overflow: 'hidden',
+                boxShadow: '0 6px 18px rgba(2,6,23,0.08)'
+              }}
+            >
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
@@ -131,7 +141,10 @@ function App() {
                 variant="scrollable"
                 scrollButtons="auto"
                 centered
-                sx={{ borderBottom: '1px solid #e0e0e0' }}
+                sx={{
+                  borderBottom: '1px solid #e6eef7',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)'
+                }}
               >
                 <Tab sx={{ minWidth: 140 }} label="📝 Registro" id="tab-0" aria-controls="tabpanel-0" />
                 <Tab sx={{ minWidth: 140 }} label="💰 Recargar" id="tab-1" aria-controls="tabpanel-1" />
@@ -139,41 +152,41 @@ function App() {
                 <Tab sx={{ minWidth: 140 }} label="✅ Confirmar Pago" id="tab-3" aria-controls="tabpanel-3" />
                 <Tab sx={{ minWidth: 140 }} label="🔍 Consultar Saldo" id="tab-4" aria-controls="tabpanel-4" />
               </Tabs>
+
+              {/* Panels container: white background, matching width, no extra shadow, flush with tabs */}
+              <Box sx={{ bgcolor: '#ffffff', p: { xs: 2, sm: 3 } }}>
+                <TabPanel value={tabValue} index={0}>
+                  <RegistroForm onSuccess={handleRegistroSuccess} />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={1}>
+                  <RecargarForm onSuccess={handleRecargarSuccess} />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={2}>
+                  <PagarForm onSuccess={handlePagarSuccess} />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={3}>
+                  {pagoState.sessionId ? (
+                    <ConfirmarPagoForm
+                      sessionId={pagoState.sessionId}
+                      token={pagoState.token || ''}
+                      monto={pagoState.monto || 0}
+                      onSuccess={handleConfirmarPagoSuccess}
+                    />
+                  ) : (
+                    <Alert severity="info">
+                      Por favor, primero inicia un pago desde la pestaña "💳 Pagar"
+                    </Alert>
+                  )}
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={4}>
+                  <ConsultarSaldoForm />
+                </TabPanel>
+              </Box>
             </Paper>
-
-            {/* Tab Panels */}
-            <Box>
-              <TabPanel value={tabValue} index={0}>
-                <RegistroForm onSuccess={handleRegistroSuccess} />
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={1}>
-                <RecargarForm onSuccess={handleRecargarSuccess} />
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={2}>
-                <PagarForm onSuccess={handlePagarSuccess} />
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={3}>
-                {pagoState.sessionId ? (
-                  <ConfirmarPagoForm
-                    sessionId={pagoState.sessionId}
-                    token={pagoState.token || ''}
-                    monto={pagoState.monto || 0}
-                    onSuccess={handleConfirmarPagoSuccess}
-                  />
-                ) : (
-                  <Alert severity="info">
-                    Por favor, primero inicia un pago desde la pestaña "💳 Pagar"
-                  </Alert>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={4}>
-                <ConsultarSaldoForm />
-              </TabPanel>
-            </Box>
           </Box>
         </Box>
 
