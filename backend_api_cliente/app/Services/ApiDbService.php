@@ -33,6 +33,15 @@ class ApiDbService
     }
 
     /**
+     * Consultar saldo en backend_api_db (GET con query params)
+     */
+    public function consultarSaldo(array $data): Response
+    {
+        return Http::timeout(30)
+            ->get("{$this->baseUrl}/billetera/saldo", $data);
+    }
+
+    /**
      * Iniciar pago en backend_api_db
      */
     public function iniciarPago(array $data): Response

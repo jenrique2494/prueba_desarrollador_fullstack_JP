@@ -56,4 +56,55 @@ class BilleteraController extends Controller
             );
         }
     }
+
+    /**
+     * Consultar saldo - Consumidor de API Backend DB
+     * Recibe query params: documento y celular
+     */
+    public function consultarSaldo(\Illuminate\Http\Request $request)
+    {
+        try {
+            // Validar parámetros GET
+            $validated = $request->validate([
+                'documento' => 'required|string|min:1',
+                'celular' => 'required|string|min:1',
+            ]);
+
+            // Consumir API de backend_api_db
+            $response = $this->apiDbService->consultarSaldo($validated);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                return $this->successResponse(
+                    $responseData['data'] ?? null,
+                    $responseData['message'] ?? 'Saldo consultado exitosamente'
+                );
+            }
+
+            // Manejar errores
+            $statusCode = $response->status();
+            $responseData = $response->json();
+
+            $message = $responseData['message'] ?? 'Error al consultar el saldo';
+            $errors = $responseData['errors'] ?? null;
+
+            return $this->errorResponse(
+                $message,
+                $statusCode,
+                $errors
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->errorResponse(
+                'Error de validación: ' . implode(', ', $e->errors()['documento'] ?? []) . ' ' . implode(', ', $e->errors()['celular'] ?? []),
+                422,
+                $e->errors()
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error en BilleteraController@consultarSaldo: ' . $e->getMessage());
+            return $this->errorResponse(
+                'Error al consultar el saldo: ' . $e->getMessage(),
+                500
+            );
+        }
+    }
 }

@@ -23,6 +23,7 @@ Route::prefix('clientes')->group(function () {
 // Recarga Billetera
 Route::prefix('billetera')->group(function () {
     Route::post('recargar', [BilleteraController::class, 'recargarBilletera'])->name('billetera.recargar');
+    Route::get('saldo', [BilleteraController::class, 'consultarSaldo'])->name('billetera.saldo');
 });
 
 // Pagos
