@@ -72,16 +72,21 @@ services:
   react:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: app_react
     restart: always
     ports:
       - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8001/api
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
     networks:
       - app_network
+    depends_on:
+      - backend_api_cliente
 
 volumes:
   mysql_data:

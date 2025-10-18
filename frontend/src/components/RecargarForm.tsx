@@ -1,0 +1,169 @@
+import React from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
+import { apiClient, RecargaBilletera } from '../api/client';
+
+interface RecargarFormProps {
+  onSuccess: (newBalance: number) => void;
+}
+
+export const RecargarForm: React.FC<RecargarFormProps> = ({ onSuccess }) => {
+  const [formData, setFormData] = React.useState({
+    documento: '',
+    celular: '',
+    valor: '',
+  });
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState('');
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const validationErrors: Record<string, string> = {};
+
+    if (!formData.documento.trim()) {
+      validationErrors.documento = 'El documento es requerido';
+    }
+    if (!formData.celular.trim()) {
+      validationErrors.celular = 'El celular es requerido';
+    }
+    if (!formData.valor.trim()) {
+      validationErrors.valor = 'El valor es requerido';
+    } else if (isNaN(Number(formData.valor)) || Number(formData.valor) <= 0) {
+      validationErrors.valor = 'El valor debe ser un número positivo';
+    }
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiClient.recargarBilletera({
+        documento: formData.documento,
+        celular: formData.celular,
+        valor: Number(formData.valor),
+      } as RecargaBilletera);
+
+      setSuccess(`Se han cargado $${Number(formData.valor).toLocaleString()} exitosamente`);
+      setFormData({ documento: '', celular: '', valor: '' });
+
+      setTimeout(() => {
+        const apiResponse = response?.data as any;
+        const payloadData = apiResponse?.data;
+        if (payloadData?.balance) {
+          onSuccess(Number(payloadData.balance));
+        }
+      }, 1500);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Error al recargar la billetera');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          💰 Recargar Billetera
+        </Typography>
+
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess('')}>
+            {success}
+          </Alert>
+        )}
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
+          <TextField
+            label="Documento"
+            name="documento"
+            value={formData.documento}
+            onChange={handleChange}
+            error={!!errors.documento}
+            helperText={errors.documento}
+            disabled={loading}
+            fullWidth
+          />
+
+          <TextField
+            label="Celular"
+            name="celular"
+            value={formData.celular}
+            onChange={handleChange}
+            error={!!errors.celular}
+            helperText={errors.celular}
+            disabled={loading}
+            fullWidth
+          />
+
+          <TextField
+            label="Valor a Cargar"
+            name="valor"
+            type="number"
+            value={formData.valor}
+            onChange={handleChange}
+            error={!!errors.valor}
+            helperText={errors.valor}
+            disabled={loading}
+            fullWidth
+            inputProps={{ step: '0.01', min: '0' }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            sx={{ mt: 2 }}
+          >
+            {loading ? <CircularProgress size={24} sx={{ mr: 1 }} /> : null}
+            {loading ? 'Recargando...' : 'Recargar'}
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
