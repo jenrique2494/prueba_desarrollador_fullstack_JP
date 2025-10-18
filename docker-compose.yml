@@ -40,7 +40,9 @@ services:
       - mysql
     networks:
       - app_network
-    command: php artisan serve --host=0.0.0.0
+    # Ensure Composer dependencies are installed even when using a bind mount that hides built vendor/
+    # Run composer install at container start, then run migrations and serve the app.
+    command: sh -c "/usr/local/bin/composer install --no-interaction --optimize-autoloader && php artisan migrate --force && php artisan serve --host=0.0.0.0"
 
   # Backend API Cliente (ePayco - Consumidor de API y puente con cliente)
   backend_api_cliente:
@@ -66,7 +68,9 @@ services:
       - backend_api_db
     networks:
       - app_network
-    command: php artisan serve --host=0.0.0.0
+    # Ensure Composer dependencies are installed even when using a bind mount that hides built vendor/
+    # Run composer install at container start, then serve the app.
+    command: sh -c "/usr/local/bin/composer install --no-interaction --optimize-autoloader && php artisan serve --host=0.0.0.0"
 
   # Frontend React (opcional para desarrollo)
   react:

@@ -109,90 +109,95 @@ function App() {
         </AppBar>
 
         {/* Main Content */}
-        <Container maxWidth="lg" sx={{ py: 3, flex: 1 }}>
-          {successMessage && (
-            <Alert 
-              severity="success" 
-              sx={{ mb: 2 }}
-              onClose={() => setSuccessMessage('')}
-            >
-              {successMessage}
-            </Alert>
-          )}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+          <Box sx={{ width: '100%', maxWidth: 600 }}>
+            {successMessage && (
+              <Alert 
+                severity="success" 
+                sx={{ mb: 2 }}
+                onClose={() => setSuccessMessage('')}
+              >
+                {successMessage}
+              </Alert>
+            )}
 
-          {/* Navigation Tabs */}
-          <Paper sx={{ mb: 3 }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{
-                borderBottom: '1px solid #e0e0e0',
-              }}
-            >
-              <Tab label="📝 Registro" id="tab-0" aria-controls="tabpanel-0" />
-              <Tab label="💰 Recargar" id="tab-1" aria-controls="tabpanel-1" />
-              <Tab label="💳 Pagar" id="tab-2" aria-controls="tabpanel-2" />
-              <Tab label="✅ Confirmar Pago" id="tab-3" aria-controls="tabpanel-3" />
-              <Tab label="🔍 Consultar Saldo" id="tab-4" aria-controls="tabpanel-4" />
-            </Tabs>
-          </Paper>
+            {/* Navigation Tabs */}
+            <Paper sx={{ mb: 3, width: '100%', mx: 'auto' }}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="scrollable"
+                scrollButtons="auto"
+                centered
+                sx={{ borderBottom: '1px solid #e0e0e0' }}
+              >
+                <Tab label="📝 Registro" id="tab-0" aria-controls="tabpanel-0" />
+                <Tab label="💰 Recargar" id="tab-1" aria-controls="tabpanel-1" />
+                <Tab label="💳 Pagar" id="tab-2" aria-controls="tabpanel-2" />
+                <Tab label="✅ Confirmar Pago" id="tab-3" aria-controls="tabpanel-3" />
+                <Tab label="🔍 Consultar Saldo" id="tab-4" aria-controls="tabpanel-4" />
+              </Tabs>
+            </Paper>
 
-          {/* Tab Panels */}
-          <Box>
-            <TabPanel value={tabValue} index={0}>
-              <RegistroForm onSuccess={handleRegistroSuccess} />
-            </TabPanel>
+            {/* Tab Panels */}
+            <Box>
+              <TabPanel value={tabValue} index={0}>
+                <RegistroForm onSuccess={handleRegistroSuccess} />
+              </TabPanel>
 
-            <TabPanel value={tabValue} index={1}>
-              <RecargarForm onSuccess={handleRecargarSuccess} />
-            </TabPanel>
+              <TabPanel value={tabValue} index={1}>
+                <RecargarForm onSuccess={handleRecargarSuccess} />
+              </TabPanel>
 
-            <TabPanel value={tabValue} index={2}>
-              <PagarForm onSuccess={handlePagarSuccess} />
-            </TabPanel>
+              <TabPanel value={tabValue} index={2}>
+                <PagarForm onSuccess={handlePagarSuccess} />
+              </TabPanel>
 
-            <TabPanel value={tabValue} index={3}>
-              {pagoState.sessionId ? (
-                <ConfirmarPagoForm
-                  sessionId={pagoState.sessionId}
-                  token={pagoState.token || ''}
-                  monto={pagoState.monto || 0}
-                  onSuccess={handleConfirmarPagoSuccess}
-                />
-              ) : (
-                <Alert severity="info">
-                  Por favor, primero inicia un pago desde la pestaña "💳 Pagar"
-                </Alert>
-              )}
-            </TabPanel>
+              <TabPanel value={tabValue} index={3}>
+                {pagoState.sessionId ? (
+                  <ConfirmarPagoForm
+                    sessionId={pagoState.sessionId}
+                    token={pagoState.token || ''}
+                    monto={pagoState.monto || 0}
+                    onSuccess={handleConfirmarPagoSuccess}
+                  />
+                ) : (
+                  <Alert severity="info">
+                    Por favor, primero inicia un pago desde la pestaña "💳 Pagar"
+                  </Alert>
+                )}
+              </TabPanel>
 
-            <TabPanel value={tabValue} index={4}>
-              <ConsultarSaldoForm />
-            </TabPanel>
+              <TabPanel value={tabValue} index={4}>
+                <ConsultarSaldoForm />
+              </TabPanel>
+            </Box>
           </Box>
-        </Container>
+        </Box>
 
         {/* Footer */}
         <Box
           component="footer"
           sx={{
             bgcolor: '#f0f0f0',
-            py: 3,
+            py: 2,
             textAlign: 'center',
             borderTop: '1px solid #e0e0e0',
-            mt: 'auto',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
-          <Typography variant="body2" color="textSecondary">
-            © 2024 ePayco - Billetera Virtual. Todos los derechos reservados.
-          </Typography>
-          <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
-            Sistema de prueba para desarrolladores
-          </Typography>
+          <Box sx={{ width: '100%', maxWidth: 600 }}>
+            <Typography variant="body2" color="textSecondary">
+              © 2024 ePayco - Billetera Virtual. Todos los derechos reservados.
+            </Typography>
+            <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+              Sistema de prueba para desarrolladores
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </ThemeProvider>
