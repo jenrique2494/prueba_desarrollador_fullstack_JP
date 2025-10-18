@@ -22,7 +22,8 @@ export const useRegistro = () => {
         'Error al registrar el cliente';
       setError(message);
       setLoading(false);
-      throw new Error(message);
+      // Rethrow original axios error so caller can extract field errors
+      throw axiosError;
     }
   };
 

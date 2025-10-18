@@ -9,8 +9,9 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { apiClient, RecargaBilletera } from '../api/client';
+import { RecargaBilletera } from '../api/client';
 import { validateRecarga } from '../lib/validations';
+import { useRecarga } from '../hooks/useRecarga';
 
 interface RecargarFormProps {
   onSuccess: (newBalance: number) => void;
@@ -26,6 +27,8 @@ export const RecargarForm: React.FC<RecargarFormProps> = ({ onSuccess }) => {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState('');
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const { recargar, error: hookError } = useRecarga();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -54,24 +57,25 @@ export const RecargarForm: React.FC<RecargarFormProps> = ({ onSuccess }) => {
     setError(null);
 
     try {
-      const response = await apiClient.recargarBilletera({
-        documento: formData.documento,
-        celular: formData.celular,
-        valor: Number(formData.valor),
-      } as RecargaBilletera);
-
+      const payload = await recargar({ documento: formData.documento, celular: formData.celular, valor: Number(formData.valor) } as RecargaBilletera);
       setSuccess(`Se han cargado $${Number(formData.valor).toLocaleString()} exitosamente`);
       setFormData({ documento: '', celular: '', valor: '' });
-
       setTimeout(() => {
-        const apiResponse = response?.data as any;
-        const payloadData = apiResponse?.data;
-        if (payloadData?.balance) {
-          onSuccess(Number(payloadData.balance));
+        if (payload?.balance) {
+          onSuccess(Number(payload.balance));
         }
       }, 1500);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Error al recargar la billetera');
+      if (err?.response?.status === 422 && err?.response?.data?.errors) {
+        const fieldErrors = err.response.data.errors;
+        const mapped: Record<string, string> = {};
+        Object.keys(fieldErrors).forEach((k) => {
+          if (Array.isArray(fieldErrors[k]) && fieldErrors[k].length) mapped[k] = fieldErrors[k][0];
+        });
+        setErrors(mapped);
+      } else {
+        setError(hookError || err?.response?.data?.message || 'Error al recargar la billetera');
+      }
     } finally {
       setLoading(false);
     }

@@ -9,8 +9,9 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { apiClient, PagoInicio } from '../api/client';
+import { PagoInicio } from '../api/client';
 import { validatePagar } from '../lib/validations';
+import { usePagar } from '../hooks/usePagar';
 
 interface PagarFormProps {
   onSuccess: (sessionId: string, token: string, monto: number) => void;
@@ -25,6 +26,8 @@ export const PagarForm: React.FC<PagarFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const { iniciar, error: hookError } = usePagar();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,24 +56,24 @@ export const PagarForm: React.FC<PagarFormProps> = ({ onSuccess }) => {
     setError(null);
 
     try {
-      const response = await apiClient.iniciarPago({
-        documento: formData.documento,
-        celular: formData.celular,
-        monto: Number(formData.monto),
-      } as PagoInicio);
-
-      // response es AxiosResponse, response.data es ApiResponse
-      const apiResponse = response.data as any;
-      const payloadData = apiResponse?.data;
-      
-      if (payloadData?.session_id) {
-        onSuccess(payloadData.session_id, payloadData.token_debug || '', Number(formData.monto));
+      const payload = await iniciar({ documento: formData.documento, celular: formData.celular, monto: Number(formData.monto) } as PagoInicio);
+      if (payload?.session_id) {
+        onSuccess(payload.session_id, payload.token_debug || '', Number(formData.monto));
         setFormData({ documento: '', celular: '', monto: '' });
       } else {
         setError('No se recibió ID de sesión');
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Error al iniciar el pago');
+      if (err?.response?.status === 422 && err?.response?.data?.errors) {
+        const fieldErrors = err.response.data.errors;
+        const mapped: Record<string, string> = {};
+        Object.keys(fieldErrors).forEach((k) => {
+          if (Array.isArray(fieldErrors[k]) && fieldErrors[k].length) mapped[k] = fieldErrors[k][0];
+        });
+        setErrors(mapped);
+      } else {
+        setError(hookError || err?.response?.data?.message || 'Error al iniciar el pago');
+      }
     } finally {
       setLoading(false);
     }

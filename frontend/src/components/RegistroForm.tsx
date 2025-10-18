@@ -62,7 +62,19 @@ export const RegistroForm: React.FC<RegistroFormProps> = ({ onSuccess }) => {
         }
       }, 1500);
     } catch (err) {
-      // Error ya está en el state del hook
+      // Si es un error axios con detalles de validación, mapear a los campos
+      const axiosErr = err as any;
+      if (axiosErr?.response?.status === 422 && axiosErr?.response?.data?.errors) {
+        const fieldErrors = axiosErr.response.data.errors;
+        const mapped: Record<string, string> = {};
+        Object.keys(fieldErrors).forEach((k) => {
+          if (Array.isArray(fieldErrors[k]) && fieldErrors[k].length) mapped[k] = fieldErrors[k][0];
+        });
+        setValidationErrors(mapped);
+      } else {
+        // fallback: show general error from hook
+        setValidationErrors({});
+      }
     }
   };
 
