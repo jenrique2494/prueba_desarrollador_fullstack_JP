@@ -18,7 +18,7 @@ services:
     networks:
       - app_network
 
-  # Backend API DB (Acceso directo a base de datos)
+  # Backend API DB (ePayco - Acceso directo a base de datos)
   backend_api_db:
     build:
       context: ./backend_api_db
@@ -42,7 +42,7 @@ services:
       - app_network
     command: php artisan serve --host=0.0.0.0
 
-  # Backend API Cliente (Consumidor de API y puente con cliente)
+  # Backend API Cliente (ePayco - Consumidor de API y puente con cliente)
   backend_api_cliente:
     build:
       context: ./backend_api_cliente

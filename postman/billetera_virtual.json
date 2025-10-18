@@ -1,0 +1,364 @@
+{
+  "info": {
+    "_postman_id": "billetera-virtual-api",
+    "name": "ePayco - Billetera Virtual API",
+    "description": "Colección de endpoints para el sistema de billetera virtual ePayco - Prueba Desarrollador Full Stack",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Cliente",
+      "item": [
+        {
+          "name": "1.1 Registro Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.environment.set('cliente_id', pm.response.json().data.id);",
+                  "    pm.environment.set('documento', pm.response.json().data.documento);",
+                  "    pm.environment.set('email', pm.response.json().data.email);",
+                  "    pm.environment.set('celular', pm.response.json().data.celular);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"1234567890\",\"nombres\": \"Juan Perez García\",\"email\": \"juan@example.com\",\"celular\": \"3001234567\"}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/clientes/registro",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "clientes", "registro"]
+            },
+            "description": "Registra un nuevo cliente con documento, nombres, email y celular"
+          },
+          "response": []
+        },
+        {
+          "name": "1.2 Registro Cliente - Validación Fallida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"\"}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/clientes/registro",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "clientes", "registro"]
+            },
+            "description": "Test: Validación fallida - campos requeridos"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Billetera",
+      "item": [
+        {
+          "name": "2.1 Recargar Billetera",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set('balance_actual', pm.response.json().data.nuevo_balance);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"{{documento}}\",\"celular\": \"{{celular}}\",\"valor\": 50000}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/billetera/recargar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "billetera", "recargar"]
+            },
+            "description": "Recarga la billetera de un cliente. Requiere documento, celular y valor."
+          },
+          "response": []
+        },
+        {
+          "name": "2.2 Recargar Billetera - Validación Fallida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"\",\"celular\": \"\",\"valor\": \"\"}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/billetera/recargar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "billetera", "recargar"]
+            },
+            "description": "Test validación: campos requeridos"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Pago",
+      "item": [
+        {
+          "name": "3.1 Iniciar Pago (Generar Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.environment.set('session_id', pm.response.json().data.session_id);",
+                  "    pm.environment.set('monto_pago', pm.response.json().data.monto);",
+                  "    console.log('Session ID guardado: ' + pm.response.json().data.session_id);",
+                  "    console.log('Email: ' + pm.response.json().data.email_enviado);",
+                  "    console.log('El token ha sido enviado al email del cliente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"{{documento}}\",\"celular\": \"{{celular}}\",\"monto\": 10000}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/pagos/iniciar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "pagos", "iniciar"]
+            },
+            "description": "Inicia una sesión de pago. Genera un token de 6 dígitos y lo envía al email del cliente. Retorna session_id para confirmación."
+          },
+          "response": []
+        },
+        {
+          "name": "3.2 Confirmar Pago con Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"session_id\": \"{{session_id}}\",\"token\": \"000000\"}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/pagos/confirmar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "pagos", "confirmar"]
+            },
+            "description": "Confirma el pago usando el session_id y el token de 6 dígitos recibido por email. Descuenta el monto de la billetera."
+          },
+          "response": []
+        },
+        {
+          "name": "3.2B Obtener Token (DESARROLLO SOLAMENTE)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url_cliente}}/api/pagos/token/{{session_id}}",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "pagos", "token", "{{session_id}}"]
+            },
+            "description": "SOLO PARA DESARROLLO: Obtiene el token de una sesión de pago sin necesidad de revisar el email. Retorna el token de 6 dígitos para confirmar el pago."
+          },
+          "response": []
+        },
+        {
+          "name": "3.3 Iniciar Pago - Saldo Insuficiente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"documento\": \"{{documento}}\",\"celular\": \"{{celular}}\",\"monto\": 9999999}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/pagos/iniciar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "pagos", "iniciar"]
+            },
+            "description": "Test: Intenta pagar un monto mayor al saldo disponible"
+          },
+          "response": []
+        },
+        {
+          "name": "3.4 Confirmar Pago - Token Inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"session_id\": \"{{session_id}}\",\"token\": \"999999\"}"
+            },
+            "url": {
+              "raw": "{{base_url_cliente}}/api/pagos/confirmar",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "pagos", "confirmar"]
+            },
+            "description": "Test: Intenta confirmar con un token incorrecto"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Consultar Saldo",
+      "item": [
+        {
+          "name": "4.1 Consultar Saldo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set('balance_actual', pm.response.json().data.balance);",
+                  "    console.log('Saldo consultado: ' + pm.response.json().data.balance);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url_cliente}}/api/billetera/saldo?documento={{documento}}&celular={{celular}}",
+              "host": ["{{base_url_cliente}}"],
+              "path": ["api", "billetera", "saldo"],
+              "query": [
+                {
+                  "key": "documento",
+                  "value": "{{documento}}"
+                },
+                {
+                  "key": "celular",
+                  "value": "{{celular}}"
+                }
+              ]
+            },
+            "description": "Consulta el saldo actual de la billetera usando query params. Se requieren documento y celular, ambos valores deben coincidir con los del cliente registrado."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url_cliente",
+      "value": "http://localhost:8001",
+      "type": "string"
+    },
+    {
+      "key": "base_url_db",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "cliente_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "documento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "celular",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "balance_actual",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "monto_pago",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

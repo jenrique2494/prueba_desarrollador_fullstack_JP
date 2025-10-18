@@ -30,7 +30,7 @@ class PagoTokenMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Token de Confirmación de Pago - Billetera Virtual',
+            subject: 'Token de Confirmación de Pago - ePayco Billetera Virtual',
         );
     }
 

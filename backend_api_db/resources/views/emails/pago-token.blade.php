@@ -81,7 +81,7 @@
         <div class="content">
             <p>Hola <strong>{{ $cliente->nombres }}</strong>,</p>
 
-            <p>Has iniciado una operación de pago en tu billetera virtual. Para completar la transacción, usa el siguiente token de confirmación:</p>
+            <p>Has iniciado una operación de pago en ePayco Billetera Virtual. Para completar la transacción, usa el siguiente token de confirmación:</p>
 
             <div class="token-box">
                 <div style="color: #666; font-size: 14px; margin-bottom: 10px;">Tu Token:</div>
@@ -104,7 +104,7 @@
         </div>
 
         <div class="footer">
-            <p>© 2025 Billetera Virtual - Todos los derechos reservados</p>
+            <p>© 2025 ePayco - Billetera Virtual. Todos los derechos reservados</p>
             <p>Este es un correo automático, por favor no responder.</p>
         </div>
     </div>
