@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Container,
+  // Container,
   AppBar,
   Toolbar,
   Typography,
@@ -110,7 +110,7 @@ function App() {
 
         {/* Main Content */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-          <Box sx={{ width: '100%', maxWidth: 600 }}>
+          <Box sx={{ width: '100%', maxWidth: 1200, px: { xs: 2, sm: 4 } }}>
             {successMessage && (
               <Alert 
                 severity="success" 
@@ -122,7 +122,7 @@ function App() {
             )}
 
             {/* Navigation Tabs */}
-            <Paper sx={{ mb: 3, width: '100%', mx: 'auto' }}>
+            <Paper sx={{ mb: 3, width: '100%', mx: 'auto', px: 1, py: 0.5, borderRadius: 2 }}>
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
@@ -133,11 +133,11 @@ function App() {
                 centered
                 sx={{ borderBottom: '1px solid #e0e0e0' }}
               >
-                <Tab label="📝 Registro" id="tab-0" aria-controls="tabpanel-0" />
-                <Tab label="💰 Recargar" id="tab-1" aria-controls="tabpanel-1" />
-                <Tab label="💳 Pagar" id="tab-2" aria-controls="tabpanel-2" />
-                <Tab label="✅ Confirmar Pago" id="tab-3" aria-controls="tabpanel-3" />
-                <Tab label="🔍 Consultar Saldo" id="tab-4" aria-controls="tabpanel-4" />
+                <Tab sx={{ minWidth: 140 }} label="📝 Registro" id="tab-0" aria-controls="tabpanel-0" />
+                <Tab sx={{ minWidth: 140 }} label="💰 Recargar" id="tab-1" aria-controls="tabpanel-1" />
+                <Tab sx={{ minWidth: 140 }} label="💳 Pagar" id="tab-2" aria-controls="tabpanel-2" />
+                <Tab sx={{ minWidth: 140 }} label="✅ Confirmar Pago" id="tab-3" aria-controls="tabpanel-3" />
+                <Tab sx={{ minWidth: 140 }} label="🔍 Consultar Saldo" id="tab-4" aria-controls="tabpanel-4" />
               </Tabs>
             </Paper>
 
@@ -190,7 +190,7 @@ function App() {
             justifyContent: 'center',
           }}
         >
-          <Box sx={{ width: '100%', maxWidth: 600 }}>
+          <Box sx={{ width: '100%', maxWidth: 1200 }}>
             <Typography variant="body2" color="textSecondary">
               © 2024 ePayco - Billetera Virtual. Todos los derechos reservados.
             </Typography>
