@@ -28,18 +28,28 @@ class ClienteController extends Controller
             $response = $this->apiDbService->registroCliente($request->validated());
 
             if ($response->successful()) {
+                $responseData = $response->json();
                 return $this->createdResponse(
-                    $response->json('data'),
-                    $response->json('message')
+                    $responseData['data'] ?? null,
+                    $responseData['message'] ?? 'Cliente registrado exitosamente'
                 );
             }
 
+            // Manejar errores de validación u otros
+            $statusCode = $response->status();
+            $responseData = $response->json();
+            
+            // Determinar mensaje: si viene en 'message', usarlo; si no, usar estructura de validación
+            $message = $responseData['message'] ?? 'Error al registrar cliente';
+            $errors = $responseData['errors'] ?? null;
+            
             return $this->errorResponse(
-                $response->json('message'),
-                $response->status(),
-                $response->json('errors')
+                $message,
+                $statusCode,
+                $errors
             );
         } catch (\Exception $e) {
+            \Log::error('Error en ClienteController@registroCliente: ' . $e->getMessage());
             return $this->errorResponse(
                 'Error al registrar el cliente: ' . $e->getMessage(),
                 500

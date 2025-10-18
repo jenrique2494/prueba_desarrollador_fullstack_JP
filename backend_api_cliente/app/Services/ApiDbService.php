@@ -19,6 +19,16 @@ class ApiDbService
      */
     public function registroCliente(array $data): Response
     {
-        return Http::post("{$this->baseUrl}/clientes/registro", $data);
+        return Http::timeout(30)
+            ->post("{$this->baseUrl}/clientes/registro", $data);
+    }
+
+    /**
+     * Recargar billetera en backend_api_db
+     */
+    public function recargarBilletera(array $data): Response
+    {
+        return Http::timeout(30)
+            ->post("{$this->baseUrl}/billetera/recargar", $data);
     }
 }

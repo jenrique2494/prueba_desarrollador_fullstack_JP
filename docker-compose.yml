@@ -56,7 +56,7 @@ services:
       DB_DATABASE: app_db
       DB_USERNAME: app_user
       DB_PASSWORD: app_password
-      API_DB_URL: http://backend_api_db:8000
+      API_DB_URL: http://backend_api_db:8000/api
     ports:
       - "8001:8000"
     volumes:
