@@ -46,29 +46,43 @@ git clone https://github.com/jenrique2494/prueba_desarrollador_fullstack_JP.git
 - Docker & Docker Compose
 - Git
 
-### Instalación y Ejecución
+### Instalación y Ejecución (actualizado)
 
 ```bash
 # 1. Clonar repositorio
 git clone https://github.com/jenrique2494/prueba_desarrollador_fullstack_JP.git
 cd prueba_desarrollador_fullstack_JP
 
-# 2. Iniciar servicios con Docker
+# 2. Construir las imágenes (opcional pero recomendado después de cambios en Dockerfiles)
+docker-compose build --no-cache
+
+# 3. Levantar solo la base de datos MySQL (para que esté disponible para migraciones)
+docker-compose up -d mysql
+
+# 4. Levantar el servicio del backend que ejecutará las migraciones
+#    (usa la imagen ya construida; esto no expondrá el resto de servicios aún)
+docker-compose up -d --no-deps --build backend_api_db
+
+# 5. Ejecutar migraciones (solo si es la primera vez o si faltan tablas)
+#    Alternativa 1: ejecutar dentro del contenedor corriendo
+docker-compose exec backend_api_db php artisan migrate --force
+
+#    Alternativa 2: ejecutar como contenedor temporal (no requiere que el servicio esté en background)
+# docker-compose run --rm backend_api_db php artisan migrate --force
+
+# 6. Finalmente levantar todos los servicios
 docker-compose up -d
-
-# 3. Esperar 10-15 segundos para que los servicios inicien completamente
-
-# 4. Verificar que todo está funcionando
-# Frontend: http://localhost:3000
-# Backend Cliente: http://localhost:8001/api/clientes/registro
-# Backend DB: http://localhost:8000/api/clientes/registro
 ```
 
-**Nota importante**: Las migraciones se ejecutan automáticamente. Si necesitas resetear:
+Notas:
+- Si quieres forzar recrear la base de datos y semillas localmente:
 
 ```bash
+# Esto eliminará datos y reaplicará migraciones + seeders
 docker-compose exec backend_api_db php artisan migrate:fresh --seed
 ```
+
+- En un entorno de primera vez (clone nuevo) los pasos 3-5 garantizan que las tablas se creen antes de servir la aplicación. Si tus Dockerfiles ya aplican migraciones automáticamente, el paso 5 será rápido o saltará si las tablas ya existen.
 
 ---
 
