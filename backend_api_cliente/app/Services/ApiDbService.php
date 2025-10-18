@@ -31,4 +31,31 @@ class ApiDbService
         return Http::timeout(30)
             ->post("{$this->baseUrl}/billetera/recargar", $data);
     }
+
+    /**
+     * Iniciar pago en backend_api_db
+     */
+    public function iniciarPago(array $data): Response
+    {
+        return Http::timeout(30)
+            ->post("{$this->baseUrl}/pagos/iniciar", $data);
+    }
+
+    /**
+     * Confirmar pago en backend_api_db
+     */
+    public function confirmarPago(array $data): Response
+    {
+        return Http::timeout(30)
+            ->post("{$this->baseUrl}/pagos/confirmar", $data);
+    }
+
+    /**
+     * Obtener token de sesión de pago (SOLO DESARROLLO)
+     */
+    public function getPaymentToken(string $sessionId): Response
+    {
+        return Http::timeout(30)
+            ->get("{$this->baseUrl}/pagos/token/{$sessionId}");
+    }
 }

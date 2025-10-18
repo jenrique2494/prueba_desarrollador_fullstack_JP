@@ -38,11 +38,11 @@ class ClienteController extends Controller
             // Manejar errores de validación u otros
             $statusCode = $response->status();
             $responseData = $response->json();
-            
+
             // Determinar mensaje: si viene en 'message', usarlo; si no, usar estructura de validación
             $message = $responseData['message'] ?? 'Error al registrar cliente';
             $errors = $responseData['errors'] ?? null;
-            
+
             return $this->errorResponse(
                 $message,
                 $statusCode,

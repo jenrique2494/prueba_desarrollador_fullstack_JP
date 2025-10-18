@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
             $table->string('session_id')->unique();
-            $table->string('token');
-            $table->decimal('monto', 15, 2);
-            $table->enum('estado', ['pendiente', 'confirmada', 'expirada'])->default('pendiente');
+            $table->string('documento');
+            $table->decimal('monto', 12, 2);
+            $table->string('token', 6);
+            $table->enum('estado', ['pending', 'confirmed', 'expired', 'cancelled'])->default('pending');
             $table->timestamp('expires_at');
+            $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });
     }

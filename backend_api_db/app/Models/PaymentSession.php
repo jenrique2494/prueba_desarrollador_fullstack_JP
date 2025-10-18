@@ -15,10 +15,12 @@ class PaymentSession extends Model
     protected $fillable = [
         'cliente_id',
         'session_id',
-        'token',
+        'documento',
         'monto',
+        'token',
         'estado',
         'expires_at',
+        'confirmed_at',
     ];
 
     /**
@@ -35,6 +37,7 @@ class PaymentSession extends Model
      */
     protected $casts = [
         'expires_at' => 'datetime',
+        'confirmed_at' => 'datetime',
     ];
 
     /**

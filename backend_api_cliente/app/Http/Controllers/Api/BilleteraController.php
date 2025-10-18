@@ -38,11 +38,11 @@ class BilleteraController extends Controller
             // Manejar errores de validación u otros
             $statusCode = $response->status();
             $responseData = $response->json();
-            
+
             // Determinar mensaje: si viene en 'message', usarlo; si no, usar valor por defecto
             $message = $responseData['message'] ?? 'Error al recargar la billetera';
             $errors = $responseData['errors'] ?? null;
-            
+
             return $this->errorResponse(
                 $message,
                 $statusCode,
