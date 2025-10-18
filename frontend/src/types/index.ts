@@ -38,3 +38,6 @@ export interface ApiResponse<T> {
 
 // Estados de la aplicación
 export type TabType = 'registro' | 'recargar' | 'pagar' | 'confirmar' | 'saldo';
+
+// Re-export everything from api/client for backward compatibility
+export * from '../api/client';

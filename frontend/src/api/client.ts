@@ -1,11 +1,30 @@
 import axios, { AxiosInstance } from 'axios';
 
+// ============ TIPOS ============
 export interface Cliente {
   id?: number;
   documento: string;
   nombres: string;
   email: string;
   celular: string;
+  balance?: number;
+}
+
+export interface Billetera {
+  cliente_id: number;
+  documento: string;
+  nombres: string;
+  email: string;
+  celular: string;
+  balance: number;
+  saldo_disponible: number;
+}
+
+export interface Pago {
+  session_id: string;
+  cliente_id?: number;
+  monto: number;
+  token_debug?: string;
 }
 
 export interface RecargaBilletera {
@@ -43,6 +62,7 @@ export interface ApiResponse<T> {
   errors?: Record<string, string[]>;
 }
 
+// ============ API CLIENT ============
 class ApiClient {
   private instance: AxiosInstance;
 
@@ -72,7 +92,7 @@ class ApiClient {
   }
 
   // Pagos
-  iniciarPago(data: PagoInicio): Promise<ApiResponse<any>> {
+  iniciarPago(data: PagoInicio): Promise<ApiResponse<Pago>> {
     return this.instance.post('/pagos/iniciar', data);
   }
 
@@ -80,7 +100,7 @@ class ApiClient {
     return this.instance.post('/pagos/confirmar', data);
   }
 
-  obtenerToken(sessionId: string): Promise<ApiResponse<any>> {
+  obtenerToken(sessionId: string): Promise<ApiResponse<Pago>> {
     return this.instance.get(`/pagos/token/${sessionId}`);
   }
 }
