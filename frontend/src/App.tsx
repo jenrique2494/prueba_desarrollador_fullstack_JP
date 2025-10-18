@@ -10,7 +10,7 @@ import {
   Paper,
   Alert,
 } from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import PaidIcon from '@mui/icons-material/Paid';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -101,9 +101,9 @@ function App() {
         {/* Header */}
         <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #0066ff 0%, #00a3e6 100%)' }}>
           <Toolbar>
-            <AccountBalanceWalletIcon sx={{ mr: 2, fontSize: 32 }} />
-            <Typography variant="h5" sx={{ fontWeight: 700, flexGrow: 1 }}>
-              ePayco - Billetera Virtual
+            <PaidIcon sx={{ mr: 2, fontSize: 32, color: 'rgba(255,255,255,0.95)' }} aria-hidden />
+            <Typography variant="h5" sx={{ fontWeight: 700, flexGrow: 1 }} component="h1">
+              ePayco — Billetera de Prueba
             </Typography>
           </Toolbar>
         </AppBar>
