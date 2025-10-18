@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Cliente } from '../api/client';
 import { useRegistro } from '../hooks/useRegistro';
+import { validateRegistro } from '../lib/validations';
 
 interface RegistroFormProps {
   onSuccess: (cliente: Cliente) => void;
@@ -41,25 +42,9 @@ export const RegistroForm: React.FC<RegistroFormProps> = ({ onSuccess }) => {
   };
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.documento.trim()) {
-      errors.documento = 'El documento es requerido';
-    }
-    if (!formData.nombres.trim()) {
-      errors.nombres = 'Los nombres son requeridos';
-    }
-    if (!formData.email.trim()) {
-      errors.email = 'El email es requerido';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'El email no es válido';
-    }
-    if (!formData.celular.trim()) {
-      errors.celular = 'El celular es requerido';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    const result = validateRegistro(formData);
+    setValidationErrors(result.errors);
+    return result.valid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

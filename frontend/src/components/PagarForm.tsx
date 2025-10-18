@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { apiClient, PagoInicio } from '../api/client';
+import { validatePagar } from '../lib/validations';
 
 interface PagarFormProps {
   onSuccess: (sessionId: string, token: string, monto: number) => void;
@@ -38,22 +39,9 @@ export const PagarForm: React.FC<PagarFormProps> = ({ onSuccess }) => {
   };
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string> = {};
-
-    if (!formData.documento.trim()) {
-      validationErrors.documento = 'El documento es requerido';
-    }
-    if (!formData.celular.trim()) {
-      validationErrors.celular = 'El celular es requerido';
-    }
-    if (!formData.monto.trim()) {
-      validationErrors.monto = 'El monto es requerido';
-    } else if (isNaN(Number(formData.monto)) || Number(formData.monto) <= 0) {
-      validationErrors.monto = 'El monto debe ser un número positivo';
-    }
-
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+    const result = validatePagar({ documento: formData.documento, celular: formData.celular, monto: formData.monto });
+    setErrors(result.errors);
+    return result.valid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -11,6 +11,7 @@ import {
   Paper,
 } from '@mui/material';
 import { apiClient, PagoConfirmacion } from '../api/client';
+import { validateToken, sanitizeTokenInput } from '../lib/validations';
 
 interface ConfirmarPagoFormProps {
   sessionId: string;
@@ -31,13 +32,10 @@ export const ConfirmarPagoForm: React.FC<ConfirmarPagoFormProps> = ({
   const [success, setSuccess] = React.useState('');
   const [tokenError, setTokenError] = React.useState('');
 
-  const validateToken = (): boolean => {
-    if (!token.trim()) {
-      setTokenError('El token es requerido');
-      return false;
-    }
-    if (token.length !== 6 || isNaN(Number(token))) {
-      setTokenError('El token debe ser 6 dígitos');
+  const isTokenValid = (): boolean => {
+    const result = validateToken(token);
+    if (!result.valid) {
+      setTokenError(result.error || 'Token inválido');
       return false;
     }
     setTokenError('');
@@ -47,7 +45,7 @@ export const ConfirmarPagoForm: React.FC<ConfirmarPagoFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateToken()) return;
+    if (!isTokenValid()) return;
 
     setLoading(true);
     setError(null);
@@ -111,7 +109,7 @@ export const ConfirmarPagoForm: React.FC<ConfirmarPagoFormProps> = ({
           <TextField
             label="Token (6 dígitos)"
             value={token}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToken(sanitizeTokenInput(e.target.value))}
             error={!!tokenError}
             helperText={tokenError}
             disabled={loading}

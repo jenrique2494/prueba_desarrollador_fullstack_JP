@@ -12,6 +12,7 @@ import {
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { apiClient, Saldo } from '../api/client';
 import { WalletCard } from './WalletCard';
+import { validateConsultarSaldo } from '../lib/validations';
 
 interface ConsultarSaldoFormProps {
   onSuccess?: (saldo: Saldo) => void;
@@ -44,17 +45,9 @@ export const ConsultarSaldoForm: React.FC<ConsultarSaldoFormProps> = ({
   };
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string> = {};
-
-    if (!formData.documento.trim()) {
-      validationErrors.documento = 'El documento es requerido';
-    }
-    if (!formData.celular.trim()) {
-      validationErrors.celular = 'El celular es requerido';
-    }
-
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+    const result = validateConsultarSaldo(formData);
+    setErrors(result.errors);
+    return result.valid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { apiClient, RecargaBilletera } from '../api/client';
+import { validateRecarga } from '../lib/validations';
 
 interface RecargarFormProps {
   onSuccess: (newBalance: number) => void;
@@ -39,22 +40,9 @@ export const RecargarForm: React.FC<RecargarFormProps> = ({ onSuccess }) => {
   };
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string> = {};
-
-    if (!formData.documento.trim()) {
-      validationErrors.documento = 'El documento es requerido';
-    }
-    if (!formData.celular.trim()) {
-      validationErrors.celular = 'El celular es requerido';
-    }
-    if (!formData.valor.trim()) {
-      validationErrors.valor = 'El valor es requerido';
-    } else if (isNaN(Number(formData.valor)) || Number(formData.valor) <= 0) {
-      validationErrors.valor = 'El valor debe ser un número positivo';
-    }
-
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+    const result = validateRecarga({ documento: formData.documento, celular: formData.celular, monto: formData.valor });
+    setErrors(result.errors);
+    return result.valid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
