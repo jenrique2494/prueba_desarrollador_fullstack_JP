@@ -34,15 +34,15 @@ services:
       DB_PASSWORD: app_password
     ports:
       - "8000:8000"
+    # Use a named volume so the image-built /app (including vendor/) is preserved.
+    # This removes the host bind-mount that hid the vendor/ folder created at build time.
     volumes:
-      - ./backend_api_db:/app
+      - backend_api_db_app:/app
     depends_on:
       - mysql
     networks:
       - app_network
-    # Ensure Composer dependencies are installed even when using a bind mount that hides built vendor/
-    # Run composer install at container start, then run migrations and serve the app.
-    command: sh -c "/usr/local/bin/composer install --no-interaction --optimize-autoloader && php artisan migrate --force && php artisan serve --host=0.0.0.0"
+    command: php artisan serve --host=0.0.0.0
 
   # Backend API Cliente (ePayco - Consumidor de API y puente con cliente)
   backend_api_cliente:
@@ -61,16 +61,15 @@ services:
       API_DB_URL: http://backend_api_db:8000/api
     ports:
       - "8001:8000"
+    # Preserve the image /app contents (so composer-installed vendor/ remains available)
     volumes:
-      - ./backend_api_cliente:/app
+      - backend_api_cliente_app:/app
     depends_on:
       - mysql
       - backend_api_db
     networks:
       - app_network
-    # Ensure Composer dependencies are installed even when using a bind mount that hides built vendor/
-    # Run composer install at container start, then serve the app.
-    command: sh -c "/usr/local/bin/composer install --no-interaction --optimize-autoloader && php artisan serve --host=0.0.0.0"
+    command: php artisan serve --host=0.0.0.0
 
   # Frontend React (opcional para desarrollo)
   react:
@@ -94,6 +93,8 @@ services:
 
 volumes:
   mysql_data:
+  backend_api_db_app:
+  backend_api_cliente_app:
 
 networks:
   app_network:
